@@ -199,10 +199,11 @@ class HysteriaController: ObservableObject {
                 }
             }
 
-            // Measure latency
+            // Measure latency (TTFB - more accurate than total time)
             let pingTask = Process()
             pingTask.executableURL = URL(fileURLWithPath: "/usr/bin/curl")
-            pingTask.arguments = ["-s", "-o", "/dev/null", "-w", "%{time_total}", "https://httpbin.org/get"]
+            // Use Cloudflare trace - faster endpoint, shows true network latency
+            pingTask.arguments = ["-s", "-o", "/dev/null", "-w", "%{time_starttransfer}", "https://cloudflare.com/cdn-cgi/trace"]
             let pingPipe = Pipe()
             pingTask.standardOutput = pingPipe
             pingTask.standardError = Pipe()

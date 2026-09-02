@@ -1,0 +1,21 @@
+# Hysteria2 client config example
+# Copy this to ~/Library/Application Support/Hysteria/config.yaml
+# and fill in your server details.
+
+server: YOUR_SERVER_IP:8443    # Your VPS IP:port (e.g., 1.2.3.4:8443)
+
+auth: YOUR_PASSWORD_HERE         # Password you set on the server
+
+bandwidth:
+  up: 100 mbps                   # Upload bandwidth limit
+  down: 100 mbps                 # Download bandwidth limit
+
+tls:
+  sni: bing.com                  # Server Name Indication (any HTTPS site)
+  insecure: true                 # Skip cert verification (uses self-signed)
+
+socks5:
+  listen: 127.0.0.1:1080         # Local SOCKS5 proxy port
+
+http:
+  listen: 127.0.0.1:8080         # Local HTTP proxy port

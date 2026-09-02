@@ -6,7 +6,7 @@ export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 set -e
 
 # Config
-SERVER_IP="${HYSTERIA_SERVER_IP:-YOUR_SERVER_IP}"
+# Server IP is read from config.yaml automatically (no need to set here)
 SOCKS_PORT="1080"
 TUN_DEVICE="utun9"          # Use utun9 to avoid conflict with AmneziaWG
 TUN_IP="10.10.0.2"
@@ -25,6 +25,26 @@ LOG_DIR="$HOME/Library/Logs/HysteriaMenu"
 PID_DIR="$HOME/Library/Application Support/HysteriaMenu/pids"
 
 mkdir -p "$LOG_DIR" "$PID_DIR"
+
+# Extract server IP from config.yaml (so we don't hardcode it here)
+extract_server_ip() {
+    local config="$CONFIG_DIR/config.yaml"
+    if [ ! -f "$config" ]; then
+        echo ""
+        return
+    fi
+    # Get server line, extract IP:port, return just IP
+    local full=$(grep "^server:" "$config" | head -1 | sed 's/^server:[[:space:]]*//')
+    # Remove :port if present
+    echo "$full" | cut -d: -f1
+}
+
+# Set SERVER_IP from env var or config
+SERVER_IP="${HYSTERIA_SERVER_IP:-$(extract_server_ip)}"
+if [ -z "$SERVER_IP" ] || [ "$SERVER_IP" = "YOUR_SERVER_IP" ]; then
+    echo "ERROR: Set HYSTERIA_SERVER_IP env var or configure config.yaml" >&2
+    exit 1
+fi
 
 cleanup_all() {
     # Kill everything VPN-related
